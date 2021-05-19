@@ -26,18 +26,18 @@ App = {
   },
 
   initContracts: function() {
-    $.getJSON("DappTokenSale.json", function(dappTokenSale) {
-      App.contracts.DappTokenSale = TruffleContract(dappTokenSale);
-      App.contracts.DappTokenSale.setProvider(App.web3Provider);
-      App.contracts.DappTokenSale.deployed().then(function(dappTokenSale) {
-        console.log("Dapp Token Sale Address:", dappTokenSale.address);
+    $.getJSON("NonTokenSale.json", function(nonTokenSale) {
+      App.contracts.NonTokenSale = TruffleContract(nonTokenSale);
+      App.contracts.NonTokenSale.setProvider(App.web3Provider);
+      App.contracts.NonTokenSale.deployed().then(function(nonTokenSale) {
+        console.log("Non Token Sale Address:", nonTokenSale.address);
       });
     }).done(function() {
-      $.getJSON("DappToken.json", function(dappToken) {
-        App.contracts.DappToken = TruffleContract(dappToken);
-        App.contracts.DappToken.setProvider(App.web3Provider);
-        App.contracts.DappToken.deployed().then(function(dappToken) {
-          console.log("Dapp Token Address:", dappToken.address);
+      $.getJSON("NonToken.json", function(nonToken) {
+        App.contracts.NonToken = TruffleContract(nonToken);
+        App.contracts.NonToken.setProvider(App.web3Provider);
+        App.contracts.NonToken.deployed().then(function(nonToken) {
+          console.log("Non Token Address:", nonToken.address);
         });
 
         App.listenForEvents();
@@ -48,7 +48,7 @@ App = {
 
   // Listen for events emitted from the contract
   listenForEvents: function() {
-    App.contracts.DappTokenSale.deployed().then(function(instance) {
+    App.contracts.NonTokenSale.deployed().then(function(instance) {
       instance.Sell({}, {
         fromBlock: 0,
         toBlock: 'latest',
@@ -80,13 +80,13 @@ App = {
     })
 
     // Load token sale contract
-    App.contracts.DappTokenSale.deployed().then(function(instance) {
-      dappTokenSaleInstance = instance;
-      return dappTokenSaleInstance.tokenPrice();
+    App.contracts.NonTokenSale.deployed().then(function(instance) {
+      nonTokenSaleInstance = instance;
+      return nonTokenSaleInstance.tokenPrice();
     }).then(function(tokenPrice) {
       App.tokenPrice = tokenPrice;
       $('.token-price').html(web3.fromWei(App.tokenPrice, "ether").toNumber());
-      return dappTokenSaleInstance.tokensSold();
+      return nonTokenSaleInstance.tokensSold();
     }).then(function(tokensSold) {
       App.tokensSold = tokensSold.toNumber();
       $('.tokens-sold').html(App.tokensSold);
@@ -96,11 +96,11 @@ App = {
       $('#progress').css('width', progressPercent + '%');
 
       // Load token contract
-      App.contracts.DappToken.deployed().then(function(instance) {
-        dappTokenInstance = instance;
-        return dappTokenInstance.balanceOf(App.account);
+      App.contracts.NonToken.deployed().then(function(instance) {
+        nonTokenInstance = instance;
+        return nonTokenInstance.balanceOf(App.account);
       }).then(function(balance) {
-        $('.dapp-balance').html(balance.toNumber());
+        $('.non-balance').html(balance.toNumber());
         App.loading = false;
         loader.hide();
         content.show();
@@ -112,7 +112,7 @@ App = {
     $('#content').hide();
     $('#loader').show();
     var numberOfTokens = $('#numberOfTokens').val();
-    App.contracts.DappTokenSale.deployed().then(function(instance) {
+    App.contracts.NonTokenSale.deployed().then(function(instance) {
       return instance.buyTokens(numberOfTokens, {
         from: App.account,
         value: numberOfTokens * App.tokenPrice,
