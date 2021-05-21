@@ -18,29 +18,11 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const infuraKey = "fj4jll3k.....";
 
-// require('dotenv').config();
-// const Web3 = require("web3");
-// const web3 = new Web3();
-// const WalletProvider = require("truffle-wallet-provider");
-// const Wallet = require('ethereumjs-wallet');
-
-// // var mainNetPrivateKey = new Buffer(process.env["MAINNET_PRIVATE_KEY"], "hex")
-// // var mainNetWallet = Wallet.fromPrivateKey(mainNetPrivateKey);
-// // var mainNetProvider = new WalletProvider(mainNetWallet, "https://mainnet.infura.io/");
-
-// var ropstenPrivateKey = new Buffer(process.env["ROPSTEN_PRIVATE_KEY"], "hex")
-// var ropstenWallet = Wallet.fromPrivateKey(ropstenPrivateKey);
-// var ropstenProvider = new WalletProvider(ropstenWallet, "https://ropsten.infura.io/");
-
-// var rinkebyPrivateKey = new Buffer(process.env["RINKEBY_PRIVATE_KEY"], "hex")
-// var rinkebyWallet = Wallet.fromPrivateKey(rinkebyPrivateKey);
-// var rinkebyProvider = new WalletProvider(rinkebyWallet, "https://rinkeby.infura.io/v3/");
+const fs = require('fs');
+const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   /**
@@ -119,6 +101,8 @@ module.exports = {
       gasPrice: 10000000000,
     }
   },
+
+  // https://www.youtube.com/watch?v=XcFl8fj-_ZU
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
