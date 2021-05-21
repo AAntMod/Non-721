@@ -24,24 +24,6 @@
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
-// require('dotenv').config();
-// const Web3 = require("web3");
-// const web3 = new Web3();
-// const WalletProvider = require("truffle-wallet-provider");
-// const Wallet = require('ethereumjs-wallet');
-
-// // var mainNetPrivateKey = new Buffer(process.env["MAINNET_PRIVATE_KEY"], "hex")
-// // var mainNetWallet = Wallet.fromPrivateKey(mainNetPrivateKey);
-// // var mainNetProvider = new WalletProvider(mainNetWallet, "https://mainnet.infura.io/");
-
-// var ropstenPrivateKey = new Buffer(process.env["ROPSTEN_PRIVATE_KEY"], "hex")
-// var ropstenWallet = Wallet.fromPrivateKey(ropstenPrivateKey);
-// var ropstenProvider = new WalletProvider(ropstenWallet, "https://ropsten.infura.io/");
-
-// var rinkebyPrivateKey = new Buffer(process.env["RINKEBY_PRIVATE_KEY"], "hex")
-// var rinkebyWallet = Wallet.fromPrivateKey(rinkebyPrivateKey);
-// var rinkebyProvider = new WalletProvider(rinkebyWallet, "https://rinkeby.infura.io/v3/");
-
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -90,34 +72,6 @@ module.exports = {
     // network_id: 2111,   // This network is yours, in the cloud.
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
-    development: {
-      host: "127.0.0.1",
-      port: "7545",
-      network_id: "5777" // match any network id
-    },
-    // mainnet: {
-    //   provider: mainNetProvider,
-    //   gas: 4600000,
-    //   gasPrice: web3.toWei("20", "gwei"),
-    //   network_id: "1",
-    // },
-    // ropsten: {
-    //   provider: ropstenProvider,
-    //   // You can get the current gasLimit by running
-    //   // truffle deploy --network rinkeby
-    //   // truffle(rinkeby)> web3.eth.getBlock("pending", (error, result) =>
-    //   //   console.log(result.gasLimit))
-    //   gas: 4600000,
-    //   gasPrice: web3.toWei("20", "gwei"),
-    //   network_id: "3",
-    // },
-    rinkeby: {
-      // provider: rinkebyProvider,
-      host: "https://rinkeby.infura.io/v3/",
-      network_id: 4,
-      gas: 4500000,
-      gasPrice: 10000000000,
-    }
   },
 
   // Set default mocha options here, use special reporters etc.
