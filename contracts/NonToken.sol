@@ -1,63 +1,201 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract NonToken {
-    string  public name = "Non Token";
-    string  public symbol = "Non";
-    string  public standard = "Non Token v1.0";
-    uint256 public totalSupply;
+interface ERC20Interface {
+    function transfer(address to, uint tokens) external returns (bool success);
+    function transferFrom(address from, address to, uint tokens) external returns (bool success);
+    function balanceOf(address tokenOwner) external view returns (uint balance);
+    function approve(address spender, uint tokens) external returns (bool success);
+    function allowance(address tokenOwner, address spender) external view returns (uint remaining);
+    function totalSupply() external view returns (uint);
 
-    event Transfer(
-        address indexed _from,
-        address indexed _to,
-        uint256 _value
-    );
+    event Transfer(address indexed from, address indexed to, uint tokens);
+    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+}
 
-    event Approval(
-        address indexed _owner,
-        address indexed _spender,
-        uint256 _value
-    );
+contract NonToken is ERC20Interface {
+    string public name;
+    string public symbol;
+    uint8 public decimals;
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) public allowed;
 
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint8 _decimals,
+        uint _totalSupply)
+        public {
+            name = _name;
+            symbol = _symbol;
+            decimals = _decimals;
+            totalSupply = _totalSupply;
+            balances[msg.sender] = _totalSupply;
+        }
 
-    constructor(uint256 _initialSupply) public {
-        balanceOf[msg.sender] = _initialSupply;
-        totalSupply = _initialSupply;
-    }
-    // function NonToken (uint256 _initialSupply) public {
-    // }
-
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= _value);
-
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
-
-        emit Transfer(msg.sender, _to, _value);
-
+    function transfer(address to, uint value) public returns(bool) {
+        require(balances[msg.sender] >= value);
+        balances[msg.sender] -= value;
+        balances[to] += value;
+        emit Transfer(msg.sender, to, value);
         return true;
     }
 
-    function approve(address _spender, uint256 _value) public returns (bool success) {
-        allowance[msg.sender][_spender] = _value;
-
-        emit Approval(msg.sender, _spender, _value);
-
+    function transferFrom(address from, address to, uint value) public returns(bool) {
+        uint allowance = allowed[from][msg.sender];
+        require(balances[msg.sender] >= value && allowance >= value);
+        allowed[from][msg.sender] -= value;
+        balances[msg.sender] -= value;
+        balances[to] += value;
+        emit Transfer(msg.sender, to, value);
         return true;
     }
 
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-        require(_value <= balanceOf[_from]);
-        require(_value <= allowance[_from][msg.sender]);
-
-        balanceOf[_from] -= _value;
-        balanceOf[_to] += _value;
-
-        allowance[_from][msg.sender] -= _value;
-
-        emit Transfer(_from, _to, _value);
-
+    function approve(address spender, uint value) public returns(bool) {
+        require(spender != msg.sender);
+        allowed[msg.sender][spender] = value;
+        emit Approval(msg.sender, spender, value);
         return true;
     }
+
+    function allowance(address owner, address spender) public view returns(uint) {
+        return allowed[owner][spender];
+    }
+
+    function balanceOf(address owner) public view returns(uint) {
+        return balances[owner];
+    }
+}
+
+contract ICO {
+    struct Sale {
+        address investor;
+        uint quantity;
+    }
+    Sale[] public sales;
+    mapping(address => bool) public investors;
+    address public token;
+    address public admin;
+    uint public end;
+    uint public price;
+    uint public availableTokens;
+    uint public minPurchase;
+    uint public maxPurchase;
+    bool public released;
+
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint8 _decimals,
+        uint _totalSupply)
+        public {
+        token = address(new NonToken(
+            _name,
+            _symbol,
+            _decimals,
+            _totalSupply
+        ));
+        admin = msg.sender;
+    }
+
+    function start(
+        uint duration,
+        uint _price,
+        uint _availableTokens,
+        uint _minPurchase,
+        uint _maxPurchase)
+        external
+        onlyAdmin()
+        icoNotActive() {
+        require(duration > 0, 'duration should be > 0');
+        uint totalSupply = NonToken(token).totalSupply();
+        require(_availableTokens > 0 && _availableTokens <= totalSupply, 'totalSupply should be > 0 and <= totalSupply');
+        require(_minPurchase > 0, '_minPurchase should > 0');
+        require(_maxPurchase > 0 && _maxPurchase <= _availableTokens, '_maxPurchase should be > 0 and <= _availableTokens');
+        end = duration + now;
+        price = _price;
+        availableTokens = _availableTokens;
+        minPurchase = _minPurchase;
+        maxPurchase = _maxPurchase;
+    }
+
+    function whitelist(address investor)
+        external
+        onlyAdmin() {
+        investors[investor] = true;
+    }
+
+    function buy()
+        payable
+        external
+        onlyInvestors()
+        icoActive() {
+        require(msg.value % price == 0, 'have to send a multiple of price');
+        require(msg.value >= minPurchase && msg.value <= maxPurchase, 'have to send between minPurchase and maxPurchase');
+        uint quantity = price * msg.value;
+        require(quantity <= availableTokens, 'Not enough tokens left for sale');
+        sales.push(Sale(
+            msg.sender,
+            quantity
+        ));
+    }
+
+    function release()
+        external
+        onlyAdmin()
+        icoEnded()
+        tokensNotReleased() {
+        NonToken tokenInstance = NonToken(token);
+        for(uint i = 0; i < sales.length; i++) {
+            Sale storage sale = sales[i];
+            tokenInstance.transfer(sale.investor, sale.quantity);
+        }
+    }
+
+    function withdraw(
+        address payable to,
+        uint amount)
+        external
+        onlyAdmin()
+        icoEnded()
+        tokensReleased() {
+        to.transfer(amount);
+    }
+
+    modifier icoActive() {
+        require(end > 0 && now < end && availableTokens > 0, "ICO must be active");
+        _;
+    }
+
+    modifier icoNotActive() {
+        require(end == 0, 'ICO should not be active');
+        _;
+    }
+
+    modifier icoEnded() {
+        require(end > 0 && (now >= end || availableTokens == 0), 'ICO must have ended');
+        _;
+    }
+
+    modifier tokensNotReleased() {
+        require(released == false, 'Tokens must NOT have been released');
+        _;
+    }
+
+    modifier tokensReleased() {
+        require(released == true, 'Tokens must have been released');
+        _;
+    }
+
+    modifier onlyInvestors() {
+        require(investors[msg.sender] == true, 'only investors');
+        _;
+    }
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, 'only admin');
+        _;
+    }
+
 }
