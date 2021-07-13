@@ -1,24 +1,23 @@
 {
-  "name": "non-token-sale",
+  "name": "non-nft",
   "version": "1.0.0",
-  "description": "Non Token Sale ICO",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "lite-server"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Gregory",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NonFi/Non-Collectible.git"
+  },
+  "keywords": [],
+  "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "dotenv": "^9.0.2",
-    "ethereumjs-wallet": "^1.0.1",
-    "lite-server": "^2.3.0",
-    "truffle-wallet-provider": "^0.0.5"
+  "bugs": {
+    "url": "https://github.com/NonFi/Non-Collectible/issues"
   },
-  "dependencies": {
-    "@openzeppelin/contracts": "^4.1.0",
-    "@truffle/hdwallet-provider": "^1.4.0"
+  "homepage": "https://github.com/NonFi/Non-Collectible#readme",
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.2.0"
   }
 }

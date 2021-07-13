@@ -72,34 +72,6 @@ module.exports = {
     // network_id: 2111,   // This network is yours, in the cloud.
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
-    development: {
-      host: "127.0.0.1",
-      port: "7545",
-      network_id: "5777" // match any network id
-    },
-    // mainnet: {
-    //   provider: mainNetProvider,
-    //   gas: 4600000,
-    //   gasPrice: web3.toWei("20", "gwei"),
-    //   network_id: "1",
-    // },
-    // ropsten: {
-    //   provider: ropstenProvider,
-    //   // You can get the current gasLimit by running
-    //   // truffle deploy --network rinkeby
-    //   // truffle(rinkeby)> web3.eth.getBlock("pending", (error, result) =>
-    //   //   console.log(result.gasLimit))
-    //   gas: 4600000,
-    //   gasPrice: web3.toWei("20", "gwei"),
-    //   network_id: "3",
-    // },
-    rinkeby: {
-      // provider: rinkebyProvider,
-      host: "https://rinkeby.infura.io/v3/",
-      network_id: 4,
-      gas: 4500000,
-      gasPrice: 10000000000,
-    }
   },
 
   // https://www.youtube.com/watch?v=XcFl8fj-_ZU
