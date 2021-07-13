@@ -18,11 +18,11 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const infuraKey = "fj4jll3k.....";
+
+const fs = require('fs');
+const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   /**
@@ -73,6 +73,8 @@ module.exports = {
     // production: true    // Treats this network as if it was a public net. (default: false)
     // }
   },
+
+  // https://www.youtube.com/watch?v=XcFl8fj-_ZU
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
